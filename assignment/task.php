@@ -12,6 +12,8 @@ function loadTasks() {
     return $data ? json_decode($data, true) : [];
 }
 
+$tasks = loadTasks();
+
 function saveTasks(array $tasks) {
     file_put_contents(TASKS_FILE, json_encode($tasks, JSON_PRETTY_PRINT));
 
@@ -33,7 +35,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
         header('Location: ' . $_SERVER['PHP_SELF']);    
         exit;
     }elseif (isset($_POST['toggle'])){
-        $tasks[$_POST['toggle']['done']] = !$tasks[$_POST['toggle']['done']]; 
+        $tasks[$_POST['toggle']]['done'] = !$tasks[$_POST['toggle']]['done']; 
         saveTasks($tasks);
         header('Location: ' . $_SERVER['PHP_SELF']);    
         exit;
@@ -107,27 +109,33 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
             <!-- Task List -->
             <h2>Task List</h2>
             <ul style="list-style: none; padding: 0;">
+
+            <?php if(empty($tasks)): ?>
               
             
                      <li>No tasks yet. Add one above!</li>
-                
-            
-                        <li class="task-item">
-                            <form method="POST" style="flex-grow: 1;">
-                                <input type="hidden" name="toggle" value="">
-                           
-                            <button type="submit" style="border: none; background: none; cursor: pointer; text-align: left; width: 100%;">
-                        <span class="task">
-                            
-                        </span>
-                    </button>
-                     </form>
 
-                     <form method="POST">
-                <input type="hidden" name="delete" value="">
-                <button type="submit" class="button button-outline" style="margin-left: 10px;">Delete</button>
-                     </form>
-                        </li>
+                     <?php else: ?>
+
+                        <?php foreach($tasks as $index => $task): ?>               
+            
+                            <li class="task-item">
+                                <form method="POST" style="flex-grow: 1;">
+                                    <input type="hidden" name="toggle" value="<?= $index ?>">
+                                    <button type="submit" style="border: none; background: none; cursor: pointer; text-align: left; width: 100%;">
+                                        <span class="task <?= $task['done'] ? 'task-done' : '' ?>"><?= htmlspecialchars($task['task']) ?></span>
+                                    </button>
+                                </form>
+                                <form method="POST">
+                                    <input type="hidden" name="delete" value="<?= $index ?>">
+                                    <button type="submit" class="button button-outline" style="margin-left: 10px;">Delete</button>
+                                </form>
+                            </li>
+
+
+                        <?php endforeach ?>
+                    <?php endif; ?>
+
 
             </ul>
 

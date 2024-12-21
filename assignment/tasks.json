@@ -1,5 +1,13 @@
 [
     {
+        "task": "First task",
+        "done": false
+    },
+    {
+        "task": "Another task",
+        "done": false
+    },
+    {
         "task": "New Task",
         "done": false
     }
